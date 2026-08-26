@@ -1,0 +1,18 @@
+services:
+  markitdown:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pixerion/markitdown:latest
+    container_name: markitdown
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - pixerion-uploads:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MARKITDOWN_ENABLE_PLUGINS=true
+
+volumes:
+  pixerion-uploads:
