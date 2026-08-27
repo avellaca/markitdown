@@ -1,4 +1,5 @@
 import os
+import io
 from pathlib import Path
 from typing import Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query, Form, Body, status
@@ -75,7 +76,9 @@ async def convert_file(
     )
 
     try:
-        result = md.convert(file.file, stream_info=stream_info)
+        file_bytes = await file.read()
+        byte_stream = io.BytesIO(file_bytes)
+        result = md.convert(byte_stream, stream_info=stream_info)
         return ConversionResponse(
             title=result.title,
             markdown=result.text_content or "",
@@ -107,7 +110,9 @@ async def convert_file_raw(
     )
 
     try:
-        result = md.convert(file.file, stream_info=stream_info)
+        file_bytes = await file.read()
+        byte_stream = io.BytesIO(file_bytes)
+        result = md.convert(byte_stream, stream_info=stream_info)
         return PlainTextResponse(content=result.text_content or "", media_type="text/markdown; charset=utf-8")
     except Exception as e:
         raise HTTPException(
